@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.io.*;
 
@@ -10,22 +11,29 @@ public class Agenda {
     }
 
     // importa arquivo TXT
-    public void importarContatos(String caminhoArquivo) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(caminhoArquivo));
-        String linha;
-        while ((linha = reader.readLine()) != null) {
-            String[] dados = linha.split("@");
-            if (dados.length == 3) {
-                Contato contato = new Contato(dados[0], dados[1], dados[2]);
-                contatos.put(dados[1], contato);
+    public void importarContatos(String caminhoArquivo) {
+        try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) {
+            String linha;
+            while ((linha = br.readLine()) != null) {
+                String[] partes = linha.split("@"); 
+                if (partes.length == 3) { 
+                    String nome = partes[0].trim();
+                    String telefone = partes[1].trim();
+                    String endereco = partes[2].trim();
+                    
+                    contatos.put(telefone, new Contato(nome, telefone, endereco));
+                } else {
+                    System.out.println("Formato inválido na linha: " + linha);
+                }
             }
+        } catch (IOException e) {
+            System.out.println("Erro ao importar contatos: " + e.getMessage());
         }
-        reader.close();
     }
 
     // exporta contatos pro arquivo TXT
-    public void exportarContatos(String caminhoArquivo) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(caminhoArquivo));
+    public void exportarContatos(String nomeArquivo) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(nomeArquivo + ".txt"));
         for (Map.Entry<String, Contato> entry : contatos.entrySet()) {
             Contato contato = entry.getValue();
             writer.write(contato.getNome() + "@" + contato.getTelefone() + "@" + contato.getEndereco());
@@ -40,20 +48,74 @@ public class Agenda {
         contatos.put(telefone, contato);
     }
 
-    // remove contato pelo telefone
-    public void removerContatoPorTelefone(String telefone) {
-        contatos.remove(telefone);
+    public boolean removerContatoPorTelefone(String telefone) {
+        Iterator<Map.Entry<String, Contato>> iterator = contatos.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Contato> entry = iterator.next();
+            Contato contato = entry.getValue();
+            if (contato.getTelefone().equals(telefone)) {
+                iterator.remove(); 
+                return true;
+            }
+        }
+        return false; 
     }
 
-    // localiza contato pelo telefone
-    public Contato localizarContatoPorTelefone(String telefone) {
-        return contatos.get(telefone);
+    public boolean removerContatoPorNome(String nome) {
+        Iterator<Map.Entry<String, Contato>> iterator = contatos.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Contato> entry = iterator.next();
+            Contato contato = entry.getValue();
+            if (contato.getNome().equals(nome)) {
+                iterator.remove();
+                return true; 
+            }
+        }
+        return false; 
+    }
+
+    public String localizarContatoPorTelefone(String telefone) {
+        Iterator<Map.Entry<String, Contato>> iterator = contatos.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Contato> entry = iterator.next();
+            Contato contato = entry.getValue();
+            if (contato.getTelefone().equals(telefone)) {
+                return "nome: " + contato.getNome() + ", telefone: " + contato.getTelefone() + ", endereço: " + contato.getEndereco(); 
+            }
+        }
+        return null;
+    }
+
+    public String localizarContatoPorNome(String nome) {
+        Iterator<Map.Entry<String, Contato>> iterator = contatos.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Contato> entry = iterator.next();
+            Contato contato = entry.getValue();
+            if (contato.getNome().equals(nome)) {
+                return "nome: " + contato.getNome() + ", telefone: " + contato.getTelefone() + ", endereço: " + contato.getEndereco(); 
+            }
+        }
+        return null;
     }
 
     // lista todos os contatos
     public void listarContatos() {
-        for (Contato contato : contatos.values()) {
-            System.out.println(contato);
+        if(contatos.size()>=0){
+            for (Contato contato : contatos.values()) {
+                System.out.println(contato);
+            }
+        }
+        else{
+            System.out.println("Não há contatos cadastrados.");
+        }
+    }
+
+    public void excluirTodosContatos() {
+        if (contatos.size() > 0) { 
+            contatos.clear(); 
+            System.out.println("Todos os contatos foram excluídos com sucesso!");
+        } else {
+            System.out.println("Não há contatos para excluir."); 
         }
     }
 
