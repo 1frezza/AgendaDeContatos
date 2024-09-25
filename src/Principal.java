@@ -1,7 +1,5 @@
 import java.util.Scanner;
 import javax.swing.JOptionPane;
-// fazer as funções de importar arquivos (ele não está achando o arquivo, portanto não conseguimos testar a função ainda) - a fazer
-// fazer a função de chamada - check
 
 public class Principal {
     public static void main(String[] args) {
