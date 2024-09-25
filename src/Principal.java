@@ -1,4 +1,9 @@
 import java.util.Scanner;
+import javax.swing.JOptionPane;
+// Não deixar cadastrar nomes e telefones iguais (mostrar um recado caso o usuário utilize o mesmo nome ou o mesmo telefone no cadastro)
+// se não tiver contatos cadastrados, mostrar uma mensagem ao usuário
+// fazer as funções de importar arquivos (ele não está achando o arquivo, portanto não conseguimos testar a função ainda)
+// fazer a função de chamada
 
 public class Principal {
     public static void main(String[] args) {
@@ -7,21 +12,11 @@ public class Principal {
         int opcao = 0;
 
         do {
-            System.out.println("1 - Importar Contatos");
-            System.out.println("2 - Exportar Contatos");
-            System.out.println("3 - Inserir Contato");
-            System.out.println("4 - Remover Contato por Telefone");
-            System.out.println("5 - Localizar Contato por Telefone");
-            System.out.println("6 - Listar todos os Contatos");
-            System.out.println("7 - Sair");
-            System.out.print("Escolha uma opção: ");
-            opcao = scanner.nextInt();
-            scanner.nextLine(); 
+            opcao = Integer.parseInt(JOptionPane.showInputDialog("1 - Importar Contatos\n2 - Exportar Contatos\n3 - Inserir Contato\n4 - Remover Contato por Telefone\n5 - Remover Contato por Nome\n6 - Localizar Contato por Telefone\n7 - Localizar Contato por Nome\n8- Listar todos os Contatos\n9- Limpar agenda\n10 - Sair\n\n\n\nEscolha uma opção: "));
 
             switch (opcao) {
                 case 1:
-                    System.out.print("Informe o caminho do arquivo: ");
-                    String caminhoImportar = scanner.nextLine();
+                    String caminhoImportar = JOptionPane.showInputDialog("Informe o caminho do arquivo: \nEx: C:\\\\Users\\\\SeuUsuario\\\\Documents\\\\contatos.csv");
                     try {
                         agenda.importarContatos(caminhoImportar);
                         System.out.println("Contatos importados com sucesso!");
@@ -30,8 +25,7 @@ public class Principal {
                     }
                     break;
                 case 2:
-                    System.out.print("Informe o caminho para exportar: ");
-                    String caminhoExportar = scanner.nextLine();
+                    String caminhoExportar = JOptionPane.showInputDialog("Informe o nome do arquivo: ");
                     try {
                         agenda.exportarContatos(caminhoExportar);
                         System.out.println("Contatos exportados com sucesso!");
@@ -40,35 +34,46 @@ public class Principal {
                     }
                     break;
                 case 3:
-                    System.out.print("Nome: ");
-                    String nome = scanner.nextLine();
-                    System.out.print("Telefone: ");
-                    String telefone = scanner.nextLine();
-                    System.out.print("Endereço: ");
-                    String endereco = scanner.nextLine();
+                    String nome = JOptionPane.showInputDialog("Nome: ");
+                    String telefone = JOptionPane.showInputDialog("Telefone: ");
+                    String endereco = JOptionPane.showInputDialog("Endereço: ");
                     agenda.inserirContato(nome, telefone, endereco);
                     System.out.println("Contato inserido com sucesso!");
                     break;
                 case 4:
-                    System.out.print("Informe o telefone do contato a ser removido: ");
-                    String telefoneRemover = scanner.nextLine();
+                    String telefoneRemover = JOptionPane.showInputDialog("Informe o telefone do contato a ser removido: ");
                     agenda.removerContatoPorTelefone(telefoneRemover);
                     System.out.println("Contato removido!");
                     break;
                 case 5:
-                    System.out.print("Informe o telefone do contato: ");
-                    String telefoneBuscar = scanner.nextLine();
-                    Contato contato = agenda.localizarContatoPorTelefone(telefoneBuscar);
-                    if (contato != null) {
-                        System.out.println("Contato encontrado: " + contato);
+                    String nomeRemover = JOptionPane.showInputDialog("Informe o nome do contato a ser removido: ");
+                    agenda.removerContatoPorNome(nomeRemover);
+                    System.out.println("Contato removido!");
+                    break;
+                case 6:
+                    String telefoneBuscar = JOptionPane.showInputDialog("Informe o telefone do contato: ");
+                    String contatoTelefone = agenda.localizarContatoPorTelefone(telefoneBuscar);
+                    if (contatoTelefone != null) {
+                        System.out.println("Contato encontrado: " + contatoTelefone);
                     } else {
                         System.out.println("Contato não encontrado.");
                     }
                     break;
-                case 6:
+                case 7:
+                    String nomeBuscar = JOptionPane.showInputDialog("Informe o nome do contato: ");
+                    String contatoNome = agenda.localizarContatoPorNome(nomeBuscar);
+                    if (contatoNome != null) {
+                        System.out.println("Contato encontrado: " + contatoNome);
+                    } else {
+                        System.out.println("Contato não encontrado.");
+                    }
+                    break;
+                case 8:
                     agenda.listarContatos();
                     break;
-                case 7:
+                case 9:
+                    agenda.excluirTodosContatos();
+                case 10:
                     System.out.println("Saindo...");
                     break;
                 default:
@@ -76,7 +81,7 @@ public class Principal {
                     break;
             }
 
-        } while (opcao != 7);
+        } while (opcao != 10);
 
         scanner.close();
     }
