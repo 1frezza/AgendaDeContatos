@@ -1,6 +1,9 @@
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.swing.JOptionPane;
+
 import java.io.*;
 
 public class Agenda {
@@ -14,22 +17,30 @@ public class Agenda {
     public void importarContatos(String caminhoArquivo) {
         try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) {
             String linha;
+            int contatosImportados = 0;
             while ((linha = br.readLine()) != null) {
-                String[] partes = linha.split("@"); 
-                if (partes.length == 3) { 
+                String[] partes = linha.split("@");
+                if (partes.length == 3) {
                     String nome = partes[0].trim();
                     String telefone = partes[1].trim();
                     String endereco = partes[2].trim();
-                    
+
                     contatos.put(telefone, new Contato(nome, telefone, endereco));
+                    contatosImportados++;
                 } else {
                     System.out.println("Formato inválido na linha: " + linha);
                 }
             }
+            System.out.println("Importação concluída. Contatos importados: " + contatosImportados);
+        } catch (FileNotFoundException e) {
+            System.out.println("Arquivo não encontrado: " + caminhoArquivo);
         } catch (IOException e) {
             System.out.println("Erro ao importar contatos: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Erro inesperado: " + e.getMessage());
         }
     }
+    
 
     // exporta contatos pro arquivo TXT
     public void exportarContatos(String nomeArquivo) throws IOException {
@@ -44,9 +55,25 @@ public class Agenda {
 
     // insere contato
     public void inserirContato(String nome, String telefone, String endereco) {
+        if (contatos.containsKey(telefone)) {
+            JOptionPane.showMessageDialog(null, "Telefone já cadastrado.");
+            return;
+        }
+    
+        for (Contato contato : contatos.values()) {
+            if (contato.getNome().equalsIgnoreCase(nome)) {
+                JOptionPane.showMessageDialog(null, "Nome já cadastrado.");
+                return;
+            }
+        }
+    
         Contato contato = new Contato(nome, telefone, endereco);
         contatos.put(telefone, contato);
+    
+        JOptionPane.showMessageDialog(null, "Contato cadastrado com sucesso!");
     }
+    
+
 
     public boolean removerContatoPorTelefone(String telefone) {
         Iterator<Map.Entry<String, Contato>> iterator = contatos.entrySet().iterator();
@@ -100,15 +127,19 @@ public class Agenda {
 
     // lista todos os contatos
     public void listarContatos() {
-        if(contatos.size()>=0){
+        if (contatos.size() > 0) {
+            StringBuilder sb = new StringBuilder();
             for (Contato contato : contatos.values()) {
-                System.out.println(contato);
+                sb.append(contato.toString()).append("\n"); 
             }
-        }
-        else{
-            System.out.println("Não há contatos cadastrados.");
+            JOptionPane.showMessageDialog(null, sb.toString()); 
+        } else {
+            JOptionPane.showMessageDialog(null, "Não há contatos cadastrados.");
         }
     }
+    
+    
+    
 
     public void excluirTodosContatos() {
         if (contatos.size() > 0) { 
@@ -118,6 +149,20 @@ public class Agenda {
             System.out.println("Não há contatos para excluir."); 
         }
     }
+
+    public void realizarChamada(String telefone) {
+        Contato contato = buscarPorTelefone(telefone);
+        if (contato != null) {
+            System.out.println("Realizando chamada para: " + contato.getNome() + " - Telefone: " + contato.getTelefone());
+        } else {
+            System.out.println("Contato não encontrado.");
+        }
+    }
+
+    private Contato buscarPorTelefone(String telefone) {
+        return contatos.get(telefone); 
+    }
+
 
    
 }
