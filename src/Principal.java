@@ -1,7 +1,5 @@
 import java.util.Scanner;
 import javax.swing.JOptionPane;
-// Não deixar cadastrar nomes e telefones iguais (mostrar um recado caso o usuário utilize o mesmo nome ou o mesmo telefone no cadastro) - check
-// se não tiver contatos cadastrados, mostrar uma mensagem ao usuário - check
 // fazer as funções de importar arquivos (ele não está achando o arquivo, portanto não conseguimos testar a função ainda) - a fazer
 // fazer a função de chamada - check
 
@@ -16,8 +14,8 @@ public class Principal {
 
             switch (opcao) {
                 case 1:
-                String caminhoImportar = JOptionPane.showInputDialog("Informe o caminho do arquivo:\nEx: C:\\Users\\SeuUsuario\\Documents\\contatos.txt");
-                    if (caminhoImportar != null && !caminhoImportar.trim().isEmpty()) {
+                String caminhoImportar = JOptionPane.showInputDialog("Informe o caminho do arquivo:\n\nEx: C:/Users/nomeUsuario/Documents/contatos.txt\n\nps. por favor siga o exemplo pois se as barrinhas estiverem ao contrário, ele não funciona");
+                    if (caminhoImportar != null) {
                         agenda.importarContatos(caminhoImportar); 
                         JOptionPane.showMessageDialog(null, "Contatos importados com sucesso!");
                     } else {
@@ -28,9 +26,9 @@ public class Principal {
                     String caminhoExportar = JOptionPane.showInputDialog("Informe o nome do arquivo: ");
                     try {
                         agenda.exportarContatos(caminhoExportar);
-                        System.out.println("Contatos exportados com sucesso!");
+                        JOptionPane.showMessageDialog(null, "Contatos exportados com sucesso!");
                     } catch (Exception e) {
-                        System.out.println("Erro ao exportar contatos: " + e.getMessage());
+                        JOptionPane.showMessageDialog(null, "Erro ao exportar contatos: " + e.getMessage());
                     }
                     break;
                 case 3:
@@ -38,34 +36,33 @@ public class Principal {
                     String telefone = JOptionPane.showInputDialog("Telefone: ");
                     String endereco = JOptionPane.showInputDialog("Endereço: ");
                     agenda.inserirContato(nome, telefone, endereco);
-                    System.out.println("Contato inserido com sucesso!");
                     break;
                 case 4:
                     String telefoneRemover = JOptionPane.showInputDialog("Informe o telefone do contato a ser removido: ");
                     agenda.removerContatoPorTelefone(telefoneRemover);
-                    System.out.println("Contato removido!");
+                    JOptionPane.showMessageDialog(null, "Contato removido!");
                     break;
                 case 5:
                     String nomeRemover = JOptionPane.showInputDialog("Informe o nome do contato a ser removido: ");
                     agenda.removerContatoPorNome(nomeRemover);
-                    System.out.println("Contato removido!");
+                    JOptionPane.showMessageDialog(null, "Contato removido!");
                     break;
                 case 6:
                     String telefoneBuscar = JOptionPane.showInputDialog("Informe o telefone do contato: ");
                     String contatoTelefone = agenda.localizarContatoPorTelefone(telefoneBuscar);
                     if (contatoTelefone != null) {
-                        System.out.println("Contato encontrado: " + contatoTelefone);
+                        JOptionPane.showMessageDialog(null, "Contato encontrado: " + contatoTelefone);
                     } else {
-                        System.out.println("Contato não encontrado.");
+                        JOptionPane.showMessageDialog(null, "Contato não encontrado.");
                     }
                     break;
                 case 7:
                     String nomeBuscar = JOptionPane.showInputDialog("Informe o nome do contato: ");
                     String contatoNome = agenda.localizarContatoPorNome(nomeBuscar);
                     if (contatoNome != null) {
-                        System.out.println("Contato encontrado: " + contatoNome);
+                        JOptionPane.showMessageDialog(null, "Contato encontrado: " + contatoNome);
                     } else {
-                        System.out.println("Contato não encontrado.");
+                        JOptionPane.showMessageDialog(null, "Contato não encontrado.");
                     }
                     break;
                 case 8:
@@ -73,15 +70,16 @@ public class Principal {
                     break;
                 case 9:
                     agenda.excluirTodosContatos();
+                    break;
                 case 10:
-                telefoneBuscar = JOptionPane.showInputDialog("Informe o telefone que desejas ligar: ");
-                contatoTelefone = agenda.localizarContatoPorTelefone(telefoneBuscar);
-                agenda.realizarChamada(telefoneBuscar);
-                    case 11:
-                    System.out.println("Saindo...");
+                nomeBuscar = JOptionPane.showInputDialog("Informe o nome do contato: ");
+                contatoTelefone = agenda.localizarContatoPorNome(nomeBuscar);
+                agenda.realizarChamada(nomeBuscar);
+                case 11:
+                    JOptionPane.showMessageDialog(null, "Saindo...");
                     break;
                 default:
-                    System.out.println("Opção inválida.");
+                    JOptionPane.showMessageDialog(null, "Opção inválida.");
                     break;
             }
 

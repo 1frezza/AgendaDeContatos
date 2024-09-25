@@ -18,6 +18,7 @@ public class Agenda {
         try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) {
             String linha;
             int contatosImportados = 0;
+            int duplicatas = 0;
             while ((linha = br.readLine()) != null) {
                 String[] partes = linha.split("@");
                 if (partes.length == 3) {
@@ -25,19 +26,37 @@ public class Agenda {
                     String telefone = partes[1].trim();
                     String endereco = partes[2].trim();
 
-                    contatos.put(telefone, new Contato(nome, telefone, endereco));
-                    contatosImportados++;
+                    if (contatos.containsKey(telefone)) {
+                        JOptionPane.showMessageDialog(null, "Telefone duplicado: " + telefone);
+                        duplicatas++;
+                        continue; 
+                    }
+                    boolean nomeDuplicado = false;
+                    for (Contato contato : contatos.values()) {
+                        if (contato.getNome().equalsIgnoreCase(nome)) {
+                            JOptionPane.showMessageDialog(null, "Nome duplicado: " + nome);
+                            duplicatas++;
+                            nomeDuplicado = true;
+                            break;
+                        }
+                    }
+    
+                    if (!nomeDuplicado) {
+                        contatos.put(telefone, new Contato(nome, telefone, endereco));
+                        contatosImportados++;
+                    }
                 } else {
-                    System.out.println("Formato inválido na linha: " + linha);
+                    JOptionPane.showMessageDialog(null, "Formato inválido na linha: " + linha);
                 }
             }
-            System.out.println("Importação concluída. Contatos importados: " + contatosImportados);
+            JOptionPane.showMessageDialog(null, "Importação concluída. \n\nContatos importados: " + contatosImportados);
+            JOptionPane.showMessageDialog(null, "Contatos duplicados não importados: " + duplicatas);
         } catch (FileNotFoundException e) {
-            System.out.println("Arquivo não encontrado: " + caminhoArquivo);
+            JOptionPane.showMessageDialog(null, "Arquivo não encontrado: " + caminhoArquivo);
         } catch (IOException e) {
-            System.out.println("Erro ao importar contatos: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro ao importar contatos: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("Erro inesperado: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro inesperado: " + e.getMessage());
         }
     }
     
@@ -53,23 +72,19 @@ public class Agenda {
         writer.close();
     }
 
-    // insere contato
     public void inserirContato(String nome, String telefone, String endereco) {
         if (contatos.containsKey(telefone)) {
-            JOptionPane.showMessageDialog(null, "Telefone já cadastrado.");
+            JOptionPane.showMessageDialog(null, "Erro: Telefone já cadastrado.");
             return;
         }
-    
         for (Contato contato : contatos.values()) {
             if (contato.getNome().equalsIgnoreCase(nome)) {
-                JOptionPane.showMessageDialog(null, "Nome já cadastrado.");
+                JOptionPane.showMessageDialog(null, "Erro: Nome já cadastrado.");
                 return;
             }
         }
-    
         Contato contato = new Contato(nome, telefone, endereco);
         contatos.put(telefone, contato);
-    
         JOptionPane.showMessageDialog(null, "Contato cadastrado com sucesso!");
     }
     
@@ -144,25 +159,18 @@ public class Agenda {
     public void excluirTodosContatos() {
         if (contatos.size() > 0) { 
             contatos.clear(); 
-            System.out.println("Todos os contatos foram excluídos com sucesso!");
+            JOptionPane.showMessageDialog(null, "Todos os contatos foram excluídos com sucesso!");
         } else {
-            System.out.println("Não há contatos para excluir."); 
+            JOptionPane.showMessageDialog(null, "Não há contatos para excluir."); 
         }
     }
 
-    public void realizarChamada(String telefone) {
-        Contato contato = buscarPorTelefone(telefone);
+    public void realizarChamada(String nome) {
+        String contato = localizarContatoPorNome(nome);
         if (contato != null) {
-            System.out.println("Realizando chamada para: " + contato.getNome() + " - Telefone: " + contato.getTelefone());
+            JOptionPane.showMessageDialog(null, "Realizando chamada para: " + contato);
         } else {
-            System.out.println("Contato não encontrado.");
+            JOptionPane.showMessageDialog(null, "Contato não encontrado.");
         }
     }
-
-    private Contato buscarPorTelefone(String telefone) {
-        return contatos.get(telefone); 
-    }
-
-
-   
 }
